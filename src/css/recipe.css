@@ -1,0 +1,49 @@
+.recipe{
+    border-radius: 25px;
+    border: 2px solid black;
+    margin: 20px;
+}
+
+.recipe-header{
+    text-align: center;
+    background-color: hsl(420, 100%, 50%);
+    border-radius: 20px 20px 0 0 ;
+    margin-bottom: 10px;
+}
+
+.recipe-title{
+    margin: 0;
+    font-size: 1.75rem;
+}
+
+.recipe-buttons{
+    align-items: center;
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: 10px;
+}
+
+.recipe-information{
+    padding: 15px;
+}
+
+.recipe-row{
+    margin-top: 10px;
+}
+
+.recipe-label{
+    margin-right: 5px;
+}
+
+.recipe-value{
+    font-weight: 300;
+}
+
+.recipe-value-intented{
+    margin-top: 10px;
+    margin-left: 20px;
+}
+
+.recipe-instructions{
+    white-space: pre-wrap;
+}
