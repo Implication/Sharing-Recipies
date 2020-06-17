@@ -1,7 +1,7 @@
 import * as firebase from 'firebase/app'
 
 const firebaseConfig = {
-    apiKey: "AIzaSyAn5EGjLVMLwVvaQvLrNjf6OBO7AzsWCeI",
+    apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: "sharing-recipes.firebaseapp.com",
     projectId: "sharing-recipes",
 };
