@@ -1,15 +1,32 @@
-import React, { useState } from 'react';
+import firebase from '../config/firestore'
+import 'firebase/firestore'
+import React, { useState, useEffect } from 'react';
 import RecipeList from './RecipeList'
 import RecipeEdit from './RecipeEdit'
 import '../css/app.css'
 import { v4 as uuidv4 } from 'uuid'
-
 export const RecipeContext = React.createContext()
 
+
+const db = firebase.firestore();
+
+
 function App() {
+  const [recipes, setRecipes] = useState([]);
   const [selectedRecipeId, setSelectedRecipeId] = useState()
-  const [recipes, setRecipes] = useState(sampleRecipes);
   const [editIsOnScreen, setEditIsOnScreen] = useState(false);
+  useEffect(() => {
+    db
+      .collection('recipes')
+      .onSnapshot(snapshot => {
+        const newRecipes = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }
+        ))
+        setRecipes(newRecipes);
+      })
+  }, [])
   const seletedRecipe = recipes.find(recipe => recipe.id === selectedRecipeId);
   const handleRecipeAdd = () => {
     const newRecipe = {
@@ -24,17 +41,19 @@ function App() {
     }
     setSelectedRecipeId(newRecipe.id);
     setEditIsOnScreen(true);
-    return setRecipes([...recipes, newRecipe]);
+    return db.collection('recipes').doc(newRecipe.id).set(newRecipe);
   }
 
   const handleRecipeChange = (id, recipe) => {
-    const newRecipes = [...recipes];
-    const index = newRecipes.findIndex(r => r.id === id)
-    newRecipes[index] = recipe;
-    setRecipes(newRecipes);
+    // const newRecipes = [...recipes];
+    // const index = newRecipes.findIndex(r => r.id === id)
+    // newRecipes[index] = recipe;
+    // setRecipes(newRecipes);
+    db.collection('recipes').doc(id).set(recipe);
   }
   const handleRecipeDelete = (id) => {
-    setRecipes(recipes.filter(recipe => recipe.id !== id))
+    // setRecipes(recipes.filter(recipe => recipe.id !== id))
+    db.collection('recipes').doc(id).delete();
     handleRecipeSelect(undefined);
   }
   const handleRecipeSelect = id => {
@@ -50,7 +69,7 @@ function App() {
   }
   return (
     <RecipeContext.Provider value={recipeContextValue}>
-      <RecipeList recipe={recipes} handleRecipeAdd={handleRecipeAdd} handleRecipeDelete={handleRecipeDelete} editIsOnScreen={editIsOnScreen} />
+      <RecipeList recipes={recipes} handleRecipeAdd={handleRecipeAdd} handleRecipeDelete={handleRecipeDelete} editIsOnScreen={editIsOnScreen} />
       {seletedRecipe && <RecipeEdit recipe={seletedRecipe} editIsOnScreen={editIsOnScreen} />}
     </RecipeContext.Provider>
   )
@@ -58,44 +77,5 @@ function App() {
 
 
 
-const sampleRecipes = [
-  {
-    id: 1,
-    name: 'Plain Chicken',
-    servings: 3,
-    cookTime: '1:45',
-    instructions: '1. Put salt on Chicken\n2. Put Chicken in oven\n3. Eat chicken',
-    ingredients: [
-      {
-        id: 1,
-        name: 'Chicken',
-        amount: '1 pound',
-      },
-      {
-        id: 2,
-        name: 'Salt',
-        amount: '0.5oz'
-      }
-    ]
-  },
-  {
-    id: 2,
-    name: 'Potato Salad',
-    servings: 5,
-    cookTime: '0:25',
-    instructions: '1. Get a Potato\n2. Get a Salad\n3. Peel Potato and put it into the salad',
-    ingredients: [
-      {
-        id: 1,
-        name: 'Salad',
-        amount: '1 pound',
-      },
-      {
-        id: 2,
-        name: 'Potato',
-        amount: '2 tb spoons'
-      }
-    ]
-  },
-]
+
 export default App;
